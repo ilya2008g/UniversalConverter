@@ -35,14 +35,25 @@ public:
     int size() {
         return data_.size();
     }
+    int get_len() {
+        if (size() == 1 && data_[0] == 0) return 1;
+        int last_dig_len = 0;
+        long long num = data_[size() - 1];
+        while (num != 0) {
+            ++last_dig_len;
+            num /= 10;
+        }
+        return (size() - 1) * 9 + last_dig_len;
+    }
+    friend void convert_to_ten(BigInteger& num, int p);
     friend BigInteger gcd(BigInteger lhs, BigInteger rhs);
-    bool if_zero(BigInteger x);
-    string convert_to_str(BigInteger x);
+    friend bool if_zero(BigInteger x);
+    string convert_to_str();
     friend BigInteger operator+(BigInteger lhs, BigInteger rhs);
     friend BigInteger operator-(BigInteger lhs, BigInteger rhs);
     friend BigInteger operator*(BigInteger lhs, BigInteger rhs);
     friend BigInteger operator*(BigInteger lhs, int rhs);
-    friend BigInteger shift_left(BigInteger& num, int k);
+    friend BigInteger shift_left(BigInteger num, int k);
     friend BigInteger operator/(BigInteger lhs, BigInteger rhs);
     friend BigInteger operator/(BigInteger lhs, int rhs);
     friend BigInteger operator%(BigInteger lhs, BigInteger rhs);
@@ -101,11 +112,9 @@ private:
 class BaseParser {
 public:
     explicit BaseParser(string s);
-    BigFraction get_num() {return number_;}
 private:
-    string whole_p_;
-    string non_per_p_;
-    string per_p_;
+    BigInteger get_digits_();
+    int p_;
     BigFraction number_;
 };
 

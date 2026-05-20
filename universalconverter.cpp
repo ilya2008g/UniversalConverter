@@ -14,32 +14,40 @@ UniversalConverter::~UniversalConverter()
 }
 
 BigInteger::BigInteger(long long x) {
-    while (x != 0) {
-        data_.push_back(x % BASE);
-        x /= BASE;
+    if (x == 0) data_.push_back(0);
+    else {
+        while (x != 0) {
+            data_.push_back(x % BASE);
+            x /= BASE;
+        }
     }
 }
 
 BigInteger::BigInteger(string s) {
     for (int i = s.length(); i > 0; i -= 9) {
         if (i < 9) {
-            data_.push_back(atoi(s.substr(0, i). c_str()));
+            data_.push_back(atoi(s.substr(0, i).c_str()));
         } else {
-            data_.push_back(atoi(s.substr(i - 9, 9). c_str()));
+            data_.push_back(atoi(s.substr(i - 9, 9).c_str()));
         }
     }
 }
 
-string BigInteger::convert_to_str(BigInteger x) {
-    string s = "";
-    for (int i = 0; i < x.size(); ++i) {
-        s += std::to_string(data_[i]);
-    }
-    return s;
-}
 
 bool if_zero(BigInteger x) {
-    return x.size() == 0;
+    return x.size() == 1 && x.data_[0] == 0;
+}
+
+string BigInteger::convert_to_str() {
+    if (if_zero(*this)) return "0";
+    string s;
+    s.reserve(size() * 9);
+    s += std::to_string(data_.back());
+    for (int i = (int)size() - 2; i >= 0; --i) {
+        string block = std::to_string(data_[i]);
+        s += string(9 - block.length(), '0') + block;
+    }
+    return s;
 }
 
 BigInteger operator+(BigInteger lhs, BigInteger rhs) {
@@ -118,7 +126,7 @@ BigInteger operator*(BigInteger lhs, int rhs) { // умножение на чи�
     return res;
 }
 
-BigInteger shift_left(BigInteger& num, int k) { // сдвиг числа на BASE^k
+BigInteger shift_left(BigInteger num, int k) { // сдвиг числа на BASE^k
     if (num.size() == 1 && num.data_[0] == 0) return num;
     BigInteger res = num;
     res.data_.insert(res.data_.begin(), k, 0);
@@ -160,7 +168,7 @@ BigInteger operator*(BigInteger lhs, BigInteger rhs) { // Алгоритм Ка�
 BigInteger operator/(BigInteger lhs, int rhs) {
     int carry = 0;
     BigInteger res = lhs;
-    for (int i = lhs.size(); i >= 0; --i) {
+    for (int i = lhs.size() - 1; i >= 0; --i) {
         long long cur = lhs.data_[i] + carry * 1ll * BASE;
         res.data_[i] =  int(cur / rhs);
         carry = int(cur % rhs);
@@ -185,7 +193,6 @@ BigInteger operator/(BigInteger lhs, BigInteger rhs) {
 
     while (low <= high) {
         BigInteger diff = high - low;
-        BigInteger half = diff / 2;
         BigInteger mid = low + (high - low) / 2;
 
         BigInteger prod = mid * rhs;
@@ -204,7 +211,7 @@ BigInteger operator/(BigInteger lhs, BigInteger rhs) {
 BigInteger operator%(BigInteger lhs, int rhs) {
     int carry = 0;
     BigInteger res = lhs;
-    for (int i = lhs.size(); i >= 0; --i) {
+    for (int i = lhs.size() - 1; i >= 0; --i) {
         long long cur = lhs.data_[i] + carry * 1ll * BASE;
         res.data_[i] =  int(cur / rhs);
         carry = int(cur % rhs);
@@ -360,7 +367,7 @@ DigitTokenizer::DigitTokenizer(string s) {
     if (it != string::npos) {
         whole_ = s.substr(0, it);
         size_t period_one = s.find('(');
-        size_t period_two = s.find(')');
+        size_t period_two = s.find(')', period_one + 1);
         if (period_one != string::npos) {
             non_per_ = s.substr(it + 1, period_one - it - 1);
             per_ = s.substr(period_one + 1, period_two - period_one - 1);
@@ -372,10 +379,79 @@ DigitTokenizer::DigitTokenizer(string s) {
     }
 }
 
-BaseParser::BaseParser(string s) {
-    DigitTokenizer num(s);
-    whole_p_ = num.get_whole();
-    non_per_p_ = num.get_non_periodic();
-    per_p_ = num.get_periodic();
+void convert_to_ten(BigInteger& num, int p) {
+    BigInteger res(0);
+    for (int i = (int)num.size() - 1; i >= 0; --i) {
+        res = res * p + BigInteger(num.data_[i]);
+    }
+    num = res;
+}
 
+BigInteger BaseParser::get_digits_(string s) {
+    if (s.empty()) return BigInteger(0);
+    vector<long long> digits;
+    for (size_t i = 0; i < s.size(); ) {
+        int val = 0;
+        if (s[i] == '[') {
+            size_t j = s.find(']', i + 1);
+            string num = s.substr(i + 1, j - i - 1);
+            val = stoi(num);
+            i = j + 1;
+        } else {
+            char c = s[i];
+            if (c >= '0' && c <= '9') val = c - '0';
+            else if (c >= 'A' && c <= 'Z') val = 10 + c - 'A';
+            else if (c >= 'a' && c <= 'z') val = 10 + c - 'a';
+            ++i;
+        }
+        digits.push_back(val);
+    }
+    std::reverse(digits.begin(), digits.end());
+    BigInteger num(digits);
+    convert_to_ten(num, p_);
+    return num;
+}
+
+BigInteger BaseParser::pow_p_(int exp) {
+    BigInteger res(1);
+    for (int i = 0; i < exp; ++i) res = res * p_;
+    return res;
+}
+
+int BaseParser::get_len_(string s) {
+    int cnt = 0;
+    for (size_t i = 0; i < s.size();) {
+        if (s[i] == '[') {
+            size_t j = s.find(']', i + 1);
+            if (j != string::npos) {
+                ++cnt;
+                i = j + 1;
+            } else ++i;
+        } else {
+            ++cnt;
+            ++i;
+        }
+    }
+    return cnt;
+}
+
+BaseParser::BaseParser(string s, int p) : p_(p) {
+    DigitTokenizer tok(s);
+
+    BigInteger whole   = get_digits_(tok.get_whole());
+    BigInteger non_per = get_digits_(tok.get_non_periodic());
+    BigInteger per     = get_digits_(tok.get_periodic());
+
+    int len_non_per = get_len_(tok.get_non_periodic());
+    int len_per     = get_len_(tok.get_periodic());
+
+    BigInteger pK = pow_p_(len_non_per);
+    BigInteger pM_minus_one = pow_p_(len_per) - BigInteger(1);
+
+    BigInteger num = non_per * pM_minus_one + per;
+    BigInteger den = pK * pM_minus_one;
+
+    BigFraction frac_part(num, den);
+    BigFraction whole_part(whole, BigInteger(1));
+    number_ = whole_part + frac_part;
 }
