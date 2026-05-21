@@ -3,7 +3,7 @@
 
 #ifndef BIGFRACTION_H
 #define BIGFRACTION_H
-void BigFraction::shrink() {
+void BigFraction::shrink() { // Сокращение с помощью алгоритма Евклида
     BigInteger divisor = gcd(numerator_, denominator_);
     numerator_ = numerator_ / divisor;
     denominator_ = denominator_ / divisor;

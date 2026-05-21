@@ -50,7 +50,7 @@ int BigInteger::convert_to_int() {
     return (int)val;
 }
 
-BigInteger operator+(BigInteger lhs, BigInteger rhs) {
+BigInteger operator+(BigInteger lhs, BigInteger rhs) { // сложение в столбик
     int carry = 0;
     BigInteger res = lhs;
     for (int i = 0; i < std::max(lhs.size(), rhs.size()) || carry; ++i) {
@@ -94,7 +94,7 @@ bool operator>=(BigInteger lhs, BigInteger rhs) {
     return !(lhs < rhs);
 }
 
-BigInteger operator-(BigInteger lhs, BigInteger rhs) {
+BigInteger operator-(BigInteger lhs, BigInteger rhs) { // вычитание в столбик
     assert(lhs >= rhs);
     int carry = 0;
     BigInteger res = lhs;
@@ -179,19 +179,19 @@ BigInteger operator/(BigInteger lhs, int rhs) {
     return res;
 }
 
-BigInteger operator/(BigInteger lhs, BigInteger rhs) {
+BigInteger operator/(BigInteger lhs, BigInteger rhs) { // Деление с помощью бин. поиска
     if (if_zero(rhs)) {
         throw string("Деление на ноль");
     }
     if (rhs > lhs) return BigInteger(0);
 
-    size_t len_diff = lhs.size() - rhs.size() + 1;
+    size_t len_diff = lhs.size() - rhs.size() + 1; // настройка low, high
     BigInteger one(1);
     BigInteger high = shift_left(one, len_diff) - one;
     BigInteger low(0);
     BigInteger q(0);
 
-    while (low <= high) {
+    while (low <= high) { // основной цикл
         BigInteger diff = high - low;
         BigInteger mid = low + (high - low) / 2;
 

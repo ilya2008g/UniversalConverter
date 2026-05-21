@@ -49,7 +49,7 @@ int BaseParser::get_len_(string s) {
     return cnt;
 }
 
-BaseParser::BaseParser(string s, int p) : p_(p) {
+BaseParser::BaseParser(string s, int p) : p_(p) { // сборка числа в 10-ичную СС
     DigitTokenizer tok(s);
 
     BigInteger whole = get_digits_(tok.get_whole());
@@ -60,7 +60,7 @@ BaseParser::BaseParser(string s, int p) : p_(p) {
     int len_per = get_len_(tok.get_periodic());
 
     BigFraction frac_part;
-    if (len_per == 0) {
+    if (len_per == 0) { // обработка периода и формулы перевода
         BigInteger pK = pow_p_(len_non_per);
         frac_part = BigFraction(non_per, pK);
     } else {

@@ -15,7 +15,7 @@ string BaseFormatter::digit_(int val, int base) {
     }
 }
 
-string BaseFormatter::int_to_q_(BigInteger num, int q) {
+string BaseFormatter::int_to_q_(BigInteger num, int q) { // перевод отдельной части числа в q-ичную СС
     if (num == BigInteger(0)) return "0";
     string res;
     while (num != BigInteger(0)) {
@@ -27,7 +27,7 @@ string BaseFormatter::int_to_q_(BigInteger num, int q) {
     return res;
 }
 
-string BaseFormatter::convert(BigFraction value, int q) {
+string BaseFormatter::convert(BigFraction value, int q) { // перевод в q-ичную СС
     value.shrink();
     BigInteger whole = value.get_whole();
     BigInteger remainder = value.get_remainder();
@@ -40,17 +40,17 @@ string BaseFormatter::convert(BigFraction value, int q) {
 
     BigInteger denominator = value.get_den();
     vector<int> digits;
-    std::map<BigInteger, size_t> seen;
+    std::map<BigInteger, size_t> seen; // сохранение остатков
     seen[remainder] = 0;
 
-    while (remainder != BigInteger(0)) {
+    while (remainder != BigInteger(0)) { // алгоритм перевода
         remainder = remainder * q;
         int digit = (remainder / denominator).convert_to_int();
         digits.push_back(digit);
         remainder = remainder % denominator;
 
         auto it = seen.find(remainder);
-        if (it != seen.end()) {
+        if (it != seen.end()) { // обнаружение периода
             size_t start = it->second;
             string frac_part;
             for (size_t i = 0; i < start; ++i) {
@@ -64,11 +64,11 @@ string BaseFormatter::convert(BigFraction value, int q) {
             return int_part + "." + frac_part;
         }
         seen[remainder] = digits.size();
-        if (digits.size() > MAX_OUTPUT_LENGTH) break;
+        if (digits.size() > MAX_OUTPUT_LENGTH) break; // обрезка числа при слишком длинном результате
     }
 
     string frac_part;
-    for (int d : digits) {
+    for (int d : digits) { // сборка числа
         frac_part += digit_(d, q);
     }
     return int_part + "." + frac_part;
