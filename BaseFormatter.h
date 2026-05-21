@@ -3,27 +3,30 @@
 
 #ifndef BASEFORMATTER_H
 #define BASEFORMATTER_H
-string BaseFormatter::digit_(int val, int base) {
+std::string BaseFormatter::digit_(int val, int base) {
     if (base <= 36) {
-        if (val < 10) {
-            return string(1, '0' + val);
-        } else {
-            return string(1, 'A' + val - 10);
-        }
+        if (val < 10) return std::string(1, '0' + val);
+        else          return std::string(1, 'A' + val - 10);
     } else {
-        return "[" + std::to_string(val) + "]";
+        if (val < 10) return std::string(1, '0' + val);
+        else if (val < 36) return std::string(1, 'A' + val - 10);
+        else return "[" + std::to_string(val) + "]";
     }
 }
 
-string BaseFormatter::int_to_q_(BigInteger num, int q) { // перевод отдельной части числа в q-ичную СС
+string BaseFormatter::int_to_q_(BigInteger num, int q) { // перевод отдельной части в q-ичную СС
     if (num == BigInteger(0)) return "0";
-    string res;
+
+    std::vector<std::string> digits;
     while (num != BigInteger(0)) {
         BigInteger rem = num % q;
-        res += digit_(rem.convert_to_int(), q);
+        digits.push_back(digit_(rem.convert_to_int(), q));
         num = num / q;
     }
-    std::reverse(res.begin(), res.end());
+
+    string res;
+    for (auto it = digits.rbegin(); it != digits.rend(); ++it)
+        res += *it;
     return res;
 }
 
