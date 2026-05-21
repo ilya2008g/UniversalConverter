@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <vector>
 #include <string>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <fstream>
 
 using std::string, std::vector;
 static const int BASE = 1e9;
@@ -23,8 +26,16 @@ public:
     UniversalConverter(QWidget *parent = nullptr);
     ~UniversalConverter();
 
+private slots:
+    void on_convert_clicked();
+    void on_file_input_clicked();
+
 private:
     Ui::UniversalConverter *ui;
+
+    void show_error_(string msg);
+    void convert_and_display_();
+    void save_to_file_(string res);
 };
 
 class BigInteger {
@@ -32,23 +43,15 @@ public:
     BigInteger(): data_(0) {}
     explicit BigInteger(long long x);
     explicit BigInteger(string s);
+    explicit BigInteger(vector<long long> num): data_(num) {}
     int size() {
         return data_.size();
-    }
-    int get_len() {
-        if (size() == 1 && data_[0] == 0) return 1;
-        int last_dig_len = 0;
-        long long num = data_[size() - 1];
-        while (num != 0) {
-            ++last_dig_len;
-            num /= 10;
-        }
-        return (size() - 1) * 9 + last_dig_len;
     }
     friend void convert_to_ten(BigInteger& num, int p);
     friend BigInteger gcd(BigInteger lhs, BigInteger rhs);
     friend bool if_zero(BigInteger x);
     string convert_to_str();
+    int convert_to_int();
     friend BigInteger operator+(BigInteger lhs, BigInteger rhs);
     friend BigInteger operator-(BigInteger lhs, BigInteger rhs);
     friend BigInteger operator*(BigInteger lhs, BigInteger rhs);
@@ -73,13 +76,15 @@ class BigFraction {
 public:
     BigFraction(): numerator_(0), denominator_(1) {}
     BigFraction(BigInteger num, BigInteger den): numerator_(num), denominator_(den) {}
-    BigFraction shrink();
+    void shrink();
     friend BigFraction operator+(BigFraction lhs, BigFraction rhs);
     friend BigFraction operator-(BigFraction lhs, BigFraction rhs);
     friend BigFraction operator*(BigFraction lhs, BigFraction rhs);
     friend BigFraction operator/(BigFraction lhs, BigFraction rhs);
     BigInteger get_whole();
     BigInteger get_remainder();
+    BigInteger get_den() {return denominator_;}
+    BigInteger get_num() {return numerator_;}
 
 private:
     BigInteger numerator_;
@@ -90,8 +95,10 @@ class InputValidator {
 public:
     InputValidator(string in, int p, int q): data_(in), p_(p), q_(q) {}
     bool is_valid();
+    string get_error() {return error_msg_;}
 private:
     bool DigitValidator(string num);
+    string error_msg_;
     string data_;
     int p_;
     int q_;
@@ -111,11 +118,32 @@ private:
 
 class BaseParser {
 public:
-    explicit BaseParser(string s);
+    BaseParser(string s, int p);
+    BigFraction get_num() {return number_;}
 private:
-    BigInteger get_digits_();
+    BigInteger get_digits_(string s);
+    int get_len_(string s);
+    BigInteger pow_p_(int exp);
     int p_;
     BigFraction number_;
+};
+
+class BaseFormatter {
+public:
+    static string convert(BigFraction value, int q);
+
+private:
+    static string digit_(int val, int base);
+    static string int_to_q_(BigInteger num, int q);
+};
+
+class BaseConverter {
+public:
+    static string convert(string input, int p, int q) {
+        BaseParser parser(input, p);
+        BigFraction value = parser.get_num();
+        return BaseFormatter::convert(value, q);
+    }
 };
 
 #endif // UNIVERSALCONVERTER_H

@@ -13,6 +13,12 @@ SOURCES += \
     universalconverter.cpp
 
 HEADERS += \
+    BaseFormatter.h \
+    BaseParser.h \
+    BigFraction.h \
+    BigInt.h \
+    DigitTokenizer.h \
+    InputValidator.h \
     universalconverter.h
 
 FORMS += \

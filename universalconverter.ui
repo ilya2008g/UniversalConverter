@@ -13,66 +13,124 @@
   <property name="windowTitle">
    <string>UniversalConverter</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: white;</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
-     <widget class="QPushButton" name="convert">
-      <property name="text">
-       <string>Перевести!</string>
+    <item row="5" column="0">
+     <widget class="QLineEdit" name="input">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="label">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
        <string>Исходная СС</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="2">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Выходная СС</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLineEdit" name="p"/>
-    </item>
-    <item row="2" column="2">
-     <widget class="QLineEdit" name="q"/>
-    </item>
-    <item row="3" column="0">
+    <item row="4" column="0">
      <widget class="QLabel" name="label_3">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
        <string>Исходное число</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="2">
+    <item row="4" column="2">
      <widget class="QLabel" name="label_4">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
        <string>Выходное число</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QLineEdit" name="input"/>
+    <item row="5" column="2">
+     <widget class="QLineEdit" name="output">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
+     </widget>
     </item>
-    <item row="4" column="2">
-     <widget class="QLineEdit" name="output"/>
+    <item row="6" column="2">
+     <widget class="QCheckBox" name="checkBox">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
+      <property name="text">
+       <string>Вывести результат в файл</string>
+      </property>
+     </widget>
     </item>
-    <item row="5" column="0">
+    <item row="3" column="0">
+     <widget class="QLineEdit" name="p">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="convert">
+      <property name="styleSheet">
+       <string notr="true">color:black;
+border: 2px solid gray;</string>
+      </property>
+      <property name="text">
+       <string>Перевести!</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QLineEdit" name="q">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
+      <property name="text">
+       <string>Выходная СС</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
      <widget class="QPushButton" name="file_input">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
        <string>Файловый ввод</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="2">
-     <widget class="QCheckBox" name="checkBox">
+    <item row="0" column="2">
+     <widget class="QLabel" name="label_5">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
+      </property>
       <property name="text">
-       <string>Вывести результат в файл</string>
+       <string>Ошибки:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLineEdit" name="error_line">
+      <property name="styleSheet">
+       <string notr="true">color: black;</string>
       </property>
      </widget>
     </item>
